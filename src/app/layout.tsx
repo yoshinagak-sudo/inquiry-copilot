@@ -3,7 +3,7 @@ import "./globals.css";
 import { AppHeader } from "@/components/AppHeader";
 
 export const metadata: Metadata = {
-  title: "inquiry-copilot — サンプル農園",
+  title: "問い合わせ対応自動化システム — サンプル農園",
   description:
     "サンプル農園の問い合わせメール返信支援ツール。AIが草案を生成し、人間が編集してワンクリックで送信できる。",
 };

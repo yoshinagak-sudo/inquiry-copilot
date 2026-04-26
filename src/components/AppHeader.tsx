@@ -18,7 +18,7 @@ export const AppHeader = () => {
         <Link
           href="/"
           className="flex items-center gap-2 text-stone-900 transition-colors hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 rounded-sm"
-          aria-label="inquiry-copilot ホーム"
+          aria-label="問い合わせ対応自動化システム ホーム"
         >
           <span
             aria-hidden
@@ -27,7 +27,7 @@ export const AppHeader = () => {
             稲
           </span>
           <span className="text-[15px] font-semibold tracking-tight">
-            inquiry-copilot
+            問い合わせ対応自動化システム
           </span>
           <span className="hidden text-[11px] text-stone-500 md:inline">
             サンプル農園
