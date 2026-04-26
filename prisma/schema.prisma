@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Inquiry {
+  id          String   @id @default(cuid())
+  fromName    String
+  fromEmail   String
+  subject     String
+  body        String
+  receivedAt  DateTime @default(now())
+  status      String   @default("new") // new | drafted | sent | archived
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  drafts      DraftReply[]
+  sent        SentReply?
+  candidates  KnowledgeCandidate[]
+  auditLogs   AuditLog[]
+
+  @@index([status])
+  @@index([receivedAt])
+}
+
+model DraftReply {
+  id          String   @id @default(cuid())
+  inquiryId   String
+  inquiry     Inquiry  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  body        String
+  confidence  Float    // 0.0〜1.0
+  citedIds    String   // JSON array of KnowledgeArticle ids
+  model       String   // "claude-sonnet-4-6" or "mock"
+  generatedAt DateTime @default(now())
+  isLatest    Boolean  @default(true)
+
+  @@index([inquiryId])
+}
+
+model SentReply {
+  id          String   @id @default(cuid())
+  inquiryId   String   @unique
+  inquiry     Inquiry  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  finalBody   String
+  draftBody   String   // 送信時点の草案本文
+  diffRatio   Float    // 0.0〜1.0、編集量
+  sentAt      DateTime @default(now())
+  sentBy      String   @default("demo-user")
+}
+
+model KnowledgeArticle {
+  id          String   @id @default(cuid())
+  title       String
+  body        String   // Markdown
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  refCount    Int      @default(0) // 引用回数
+  lastUsedAt  DateTime?
+  source      String   @default("manual") // manual | candidate
+
+  @@index([categoryId])
+}
+
+model KnowledgeCandidate {
+  id            String   @id @default(cuid())
+  title         String
+  body          String   // Markdown 草案
+  reason        String   // 生成理由（差分大 / 頻出質問 等）
+  sourceInquiryId String?
+  sourceInquiry Inquiry? @relation(fields: [sourceInquiryId], references: [id])
+  status        String   @default("pending") // pending | approved | rejected
+  createdAt     DateTime @default(now())
+  reviewedAt    DateTime?
+  reviewedBy    String?
+
+  @@index([status])
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  inquiries   Inquiry[]
+  knowledge   KnowledgeArticle[]
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  inquiryId  String?
+  inquiry    Inquiry? @relation(fields: [inquiryId], references: [id])
+  action     String   // draft_generated | sent | candidate_created | candidate_approved | candidate_rejected
+  detail     String?  // JSON 詳細
+  actor      String   @default("demo-user")
+  createdAt  DateTime @default(now())
+
+  @@index([action])
+  @@index([createdAt])
+}
