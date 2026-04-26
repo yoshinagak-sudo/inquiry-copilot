@@ -30,7 +30,7 @@ export const AppHeader = () => {
             inquiry-copilot
           </span>
           <span className="hidden text-[11px] text-stone-500 md:inline">
-            舞台ファーム
+            サンプル農園
           </span>
         </Link>
 

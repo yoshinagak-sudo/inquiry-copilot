@@ -15,8 +15,8 @@ const MOBILE_VP = { width: 390, height: 844 };       // iPhone 14 Pro 相当
 const DESKTOP_VP = { width: 1440, height: 900 };
 
 // === 撮影対象ページ ===
-const NEW_INQUIRY_ID = 'cmofhqto9000ii2rdyarsym9u'; // 未送信（草案編集）
-const SENT_INQUIRY_ID = 'cmofhqtob000mi2rd5b1g7j47'; // 送信済み
+const NEW_INQUIRY_ID = 'cmofizkjg000oymrdpweojvxc'; // 未送信（草案編集）
+const SENT_INQUIRY_ID = 'cmofizkjg000mymrd5qyujuqn'; // 送信済み
 
 const PAGES = [
   // デスクトップ

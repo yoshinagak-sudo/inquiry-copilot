@@ -4,7 +4,7 @@
 
 - ベース背景: `bg-stone-50`（米の温かみを残しつつ業務系の落ち着き）
 - カード: `bg-white border border-stone-200 shadow-sm rounded-lg`
-- アクセント: 舞台ファームの深緑 `emerald-700` （primary）/ 稲穂アンバー `amber-500`（warn）
+- アクセント: サンプル農園の深緑 `emerald-700` （primary）/ 稲穂アンバー `amber-500`（warn）
 - テキスト: `text-stone-900` 主、`text-stone-600` 副、`text-stone-500` 補助
 - フォーカスリング: `focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1`
 

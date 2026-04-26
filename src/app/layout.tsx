@@ -3,9 +3,9 @@ import "./globals.css";
 import { AppHeader } from "@/components/AppHeader";
 
 export const metadata: Metadata = {
-  title: "inquiry-copilot — 舞台ファーム",
+  title: "inquiry-copilot — サンプル農園",
   description:
-    "舞台ファームの問い合わせメール返信支援ツール。AIが草案を生成し、人間が編集してワンクリックで送信できる。",
+    "サンプル農園の問い合わせメール返信支援ツール。AIが草案を生成し、人間が編集してワンクリックで送信できる。",
 };
 
 export default function RootLayout({
