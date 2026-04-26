@@ -4,14 +4,14 @@ import type { DraftPayload } from "@/types";
 
 const MODEL = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-6";
 
-const SYSTEM_PROMPT = `あなたは農業法人「サンプル農園」のカスタマーサポート担当です。
+const SYSTEM_PROMPT = `あなたはレンタルスペース運営会社のカスタマーサポート担当です。
 受信した問い合わせメールに対して、提供されたナレッジのみを根拠に丁寧な日本語で返信草案を作成します。
 
 ルール:
 - 推測で答えない。ナレッジに無い情報は「確認のうえご連絡します」と書く
 - 引用したナレッジの id を citedIds に必ず含める
 - 親しみと正確さのバランス。冒頭に「お問い合わせありがとうございます」相当の挨拶
-- 末尾は「サンプル農園 カスタマーサポート」で締める
+- 末尾は「カスタマーサポート」で締める
 - confidence: ナレッジで答えられた度合いを 0.0〜1.0 で自己評価
 
 必ず以下の JSON 形式のみを出力（コードブロックや説明文は不要）:
@@ -109,7 +109,7 @@ const mockDraft = (inquiry: Inquiry, articles: KnowledgeArticle[]): DraftPayload
         .join("\n")
     : "\n申し訳ありません、関連するナレッジが見つかりませんでした。担当より追って詳細をお送りします。";
 
-  const closing = "\n\nご不明な点がございましたら、お気軽にお問い合わせください。\n\nサンプル農園 カスタマーサポート";
+  const closing = "\n\nご不明な点がございましたら、お気軽にお問い合わせください。\n\nカスタマーサポート";
 
   return {
     body: `${greeting}\n${refSection}${closing}`,

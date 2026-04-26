@@ -3,9 +3,9 @@ import "./globals.css";
 import { AppHeader } from "@/components/AppHeader";
 
 export const metadata: Metadata = {
-  title: "問い合わせ対応自動化システム — サンプル農園",
+  title: "問い合わせ対応自動化システム",
   description:
-    "サンプル農園の問い合わせメール返信支援ツール。AIが草案を生成し、人間が編集してワンクリックで送信できる。",
+    "問い合わせメール対応を自動化する業務支援システム（デモ）。AIが返信草案を生成し、担当者が編集してワンクリックで送信できる。",
 };
 
 export default function RootLayout({

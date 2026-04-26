@@ -54,7 +54,7 @@ export default async function InboxPage({
           受信箱
         </h1>
         <p className="text-sm text-stone-600">
-          サンプル農園宛の問い合わせを一覧表示します。AI が下書きを準備しています。
+          御社宛の問い合わせを一覧表示します。AI が返信草案を準備しています。
         </p>
       </header>
 

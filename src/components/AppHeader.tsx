@@ -30,7 +30,7 @@ export const AppHeader = () => {
             問い合わせ対応自動化システム
           </span>
           <span className="hidden text-[11px] text-stone-500 md:inline">
-            サンプル農園
+            Demo
           </span>
         </Link>
 
