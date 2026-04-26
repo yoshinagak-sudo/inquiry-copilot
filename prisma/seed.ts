@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { generateDraft } from "../src/lib/llm";
 
 const adapter = new PrismaBetterSqlite3({
   url: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
@@ -281,8 +282,10 @@ async function main() {
     });
   }
 
+  const articles = await prisma.knowledgeArticle.findMany();
+
   for (const i of INQUIRIES) {
-    await prisma.inquiry.create({
+    const inq = await prisma.inquiry.create({
       data: {
         fromName: i.fromName,
         fromEmail: i.fromEmail,
@@ -292,11 +295,35 @@ async function main() {
         receivedAt: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 48),
       },
     });
+
+    const generated = await generateDraft(inq, articles);
+    await prisma.draftReply.create({
+      data: {
+        inquiryId: inq.id,
+        body: generated.body,
+        confidence: generated.confidence,
+        citedIds: JSON.stringify(generated.citedIds),
+        model: generated.model,
+        isLatest: true,
+      },
+    });
+    await prisma.inquiry.update({
+      where: { id: inq.id },
+      data: { status: "drafted" },
+    });
+    await prisma.auditLog.create({
+      data: {
+        inquiryId: inq.id,
+        action: "draft_generated",
+        detail: JSON.stringify({ model: generated.model, confidence: generated.confidence, source: "seed" }),
+      },
+    });
   }
 
   const inquiries = await prisma.inquiry.count();
+  const drafts = await prisma.draftReply.count();
   const knowledge = await prisma.knowledgeArticle.count();
-  console.log(`Seeded: ${CATEGORIES.length} categories, ${knowledge} knowledge articles, ${inquiries} inquiries`);
+  console.log(`Seeded: ${CATEGORIES.length} categories, ${knowledge} knowledge articles, ${inquiries} inquiries, ${drafts} drafts`);
 }
 
 main()
