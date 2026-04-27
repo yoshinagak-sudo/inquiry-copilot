@@ -6,6 +6,7 @@ import {
   confidenceClass,
   confidenceLabel,
   formatDateTime,
+  parseProductRefs,
 } from "@/lib/format";
 import { Badge } from "@/components/Badge";
 import type { CitedArticle, InquiryDetail } from "@/types";
@@ -163,6 +164,8 @@ const DraftWorkbench = ({ inquiry }: Props) => {
   const isSending = sendState === "sending";
   const isLocked = isCounting || isSending || sendState === "done";
 
+  const productRefs = parseProductRefs(inquiry.productRefs);
+
   return (
     <section
       aria-labelledby="draft-title"
@@ -195,6 +198,26 @@ const DraftWorkbench = ({ inquiry }: Props) => {
           {isRegenerating ? "再生成中…" : "再生成"}
         </button>
       </div>
+
+      {/* 過去納品事例ヒット注記（productRefs がある場合のみ） */}
+      {productRefs.length > 0 && (
+        <div className="border-b border-stone-100 bg-emerald-50/50 px-4 py-2">
+          <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[12px] leading-5 text-emerald-900">
+            <span aria-hidden className="text-emerald-700">●</span>
+            <span>過去納品事例</span>
+            {productRefs.map((ref) => (
+              <span
+                key={ref}
+                className="inline-flex items-center gap-1 rounded-md bg-white px-1.5 py-0.5 text-[10.5px] font-medium leading-4 text-emerald-800 ring-1 ring-inset ring-emerald-200"
+              >
+                <span aria-hidden>#</span>
+                <span className="font-mono">{ref}</span>
+              </span>
+            ))}
+            <span>を優先的に引用しています</span>
+          </p>
+        </div>
+      )}
 
       {/* 引用ナレッジ */}
       {draftMeta.citedArticles.length > 0 && (

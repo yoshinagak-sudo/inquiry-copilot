@@ -16,6 +16,12 @@ model Inquiry {
   status      String   @default("new") // new | drafted | sent | archived
   categoryId  String?
   category    Category? @relation(fields: [categoryId], references: [id])
+  // 受信時に AI が抽出するメタ情報（一覧で要約表示）
+  budgetText    String?  // 例: "1万前後", "3000円〜7000円"
+  quantityText  String?  // 例: "30個", "100個以上", "未定"
+  summaryNote   String?  // 1〜2行の要約（一覧表示用）
+  // 本文中に検出した型番URL（tk_18 等）。引用優先のヒントに使う
+  productRefs   String?  // JSON array of product ref tokens
   drafts      DraftReply[]
   sent        SentReply?
   candidates  KnowledgeCandidate[]

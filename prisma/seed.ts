@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import { generateDraft } from "../src/lib/llm";
+import { generateDraft, classifyInquiry, extractMetadata } from "../src/lib/llm";
 
 const adapter = new PrismaBetterSqlite3({
   url: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
@@ -440,15 +440,24 @@ async function main() {
   }
 
   const articles = await prisma.knowledgeArticle.findMany();
+  const categoryNames = CATEGORIES.map((c) => c.name);
 
   for (const i of INQUIRIES) {
+    // 受信時の自動処理: メタ抽出 + カテゴリ分類
+    const meta = await extractMetadata(i);
+    const classifiedName = await classifyInquiry(i, categoryNames);
+
     const inq = await prisma.inquiry.create({
       data: {
         fromName: i.fromName,
         fromEmail: i.fromEmail,
         subject: i.subject,
         body: i.body,
-        categoryId: categoryMap.get(i.category) ?? null,
+        categoryId: classifiedName ? (categoryMap.get(classifiedName) ?? null) : null,
+        budgetText: meta.budgetText,
+        quantityText: meta.quantityText,
+        summaryNote: meta.summaryNote,
+        productRefs: meta.productRefs.length ? JSON.stringify(meta.productRefs) : null,
         receivedAt: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 48),
       },
     });

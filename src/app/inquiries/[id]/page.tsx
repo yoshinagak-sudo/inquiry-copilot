@@ -2,9 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import {
+  META_PILL_PRODUCT_CLASS,
   categoryClass,
   formatDateTime,
   formatRelative,
+  parseProductRefs,
   statusBadge,
 } from "@/lib/format";
 import { Badge } from "@/components/Badge";
@@ -28,6 +30,11 @@ export default async function InquiryDetailPage({
   if (!detail || !detail.id) notFound();
 
   const sb = statusBadge(detail.status);
+  const productRefs = parseProductRefs(detail.productRefs);
+  const hasMeta =
+    Boolean(detail.budgetText) ||
+    Boolean(detail.quantityText) ||
+    productRefs.length > 0;
 
   return (
     <div className="space-y-6">
@@ -69,6 +76,41 @@ export default async function InquiryDetailPage({
         </div>
       </header>
 
+      {/* 案件メタサマリー（予算 / 個数 / 型番ヒット） */}
+      {hasMeta && (
+        <section
+          aria-label="案件メタ情報"
+          className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-stone-200 bg-stone-50/60 px-4 py-2.5"
+        >
+          {detail.budgetText && (
+            <MetaItem label="予算" value={detail.budgetText} />
+          )}
+          {detail.quantityText && (
+            <MetaItem label="個数" value={detail.quantityText} />
+          )}
+          {productRefs.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] font-medium uppercase tracking-wide text-stone-500">
+                過去事例
+              </span>
+              <div className="flex flex-wrap items-center gap-1">
+                {productRefs.map((ref) => (
+                  <span
+                    key={ref}
+                    className={META_PILL_PRODUCT_CLASS}
+                    title={`型番ヒット: ${ref}`}
+                  >
+                    <span aria-hidden>#</span>
+                    <span className="font-mono">{ref}</span>
+                  </span>
+                ))}
+                <span className="text-[11px] text-stone-500">ヒット</span>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
       {/* 問い合わせ本文 */}
       <section
         aria-labelledby="inquiry-body-title"
@@ -97,3 +139,13 @@ export default async function InquiryDetailPage({
     </div>
   );
 }
+
+/** 案件メタの「ラベル + 値」を小さく並べる単位 */
+const MetaItem = ({ label, value }: { label: string; value: string }) => (
+  <div className="flex items-center gap-1.5">
+    <span className="text-[11px] font-medium uppercase tracking-wide text-stone-500">
+      {label}
+    </span>
+    <span className="text-[13px] font-medium text-stone-800">{value}</span>
+  </div>
+);

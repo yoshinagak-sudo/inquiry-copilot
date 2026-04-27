@@ -57,6 +57,27 @@ export const categoryClass = (name: string | undefined | null): string => {
   }
 };
 
+/**
+ * `productRefs` は JSON 配列文字列で保存されている（例: `'["tk_18"]'`）。
+ * 不正値や null は空配列として扱う。
+ */
+export const parseProductRefs = (raw: string | null): string[] => {
+  if (!raw) return [];
+  try {
+    const v = JSON.parse(raw);
+    return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
+  } catch {
+    return [];
+  }
+};
+
+/** メタピル（予算 / 個数 / 型番）の共通 className */
+export const META_PILL_CLASS =
+  "inline-flex items-center gap-1 rounded-md bg-stone-100 px-1.5 py-0.5 text-[10.5px] font-medium leading-4 text-stone-700 ring-1 ring-inset ring-stone-200";
+
+export const META_PILL_PRODUCT_CLASS =
+  "inline-flex items-center gap-1 rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10.5px] font-medium leading-4 text-emerald-800 ring-1 ring-inset ring-emerald-200";
+
 /** ステータスバッジのクラスとラベル */
 export const statusBadge = (
   status: string,

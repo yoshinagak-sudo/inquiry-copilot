@@ -15,8 +15,8 @@ const MOBILE_VP = { width: 390, height: 844 };       // iPhone 14 Pro 相当
 const DESKTOP_VP = { width: 1440, height: 900 };
 
 // === 撮影対象ページ ===
-const NEW_INQUIRY_ID = 'cmoglf2ie000hp8rdhi5qv2nd'; // 未送信 — オリジナルトロフィー製作見積もり
-const SENT_INQUIRY_ID = 'cmoglf2il000np8rdar5jzs9n'; // 送信済み — アクリルキーホルダー大量発注
+const NEW_INQUIRY_ID = 'cmogrtlu0000ky9rdqrc0djwd'; // 未送信 — 既成型トロフィー（tk_18 ヒット）
+const SENT_INQUIRY_ID = 'cmogrtluc000ny9rde2kx83i1'; // 送信済み — アクリルキーホルダー大量発注
 
 const PAGES = [
   // デスクトップ

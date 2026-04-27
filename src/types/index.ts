@@ -34,6 +34,13 @@ export type DraftPayload = {
   model: string; // "claude-sonnet-4-6" | "mock"
 };
 
+export type InquiryMetadata = {
+  budgetText: string | null;
+  quantityText: string | null;
+  summaryNote: string | null;
+  productRefs: string[];
+};
+
 export type InquiryListItem = Inquiry & {
   category: Category | null;
   latestDraft: DraftReply | null;

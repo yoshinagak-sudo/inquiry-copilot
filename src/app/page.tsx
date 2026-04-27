@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import {
+  META_PILL_CLASS,
+  META_PILL_PRODUCT_CLASS,
   categoryClass,
   confidenceClass,
   confidenceLabel,
   formatRelative,
+  parseProductRefs,
   statusBadge,
 } from "@/lib/format";
 import { Badge } from "@/components/Badge";
@@ -161,6 +164,7 @@ export default async function InboxPage({
                       >
                         <span className="line-clamp-1">{it.subject}</span>
                       </Link>
+                      <MetaPills item={it} className="mt-1.5" />
                     </td>
                     <td className="px-4 py-3 align-top">
                       {it.category ? (
@@ -220,7 +224,7 @@ export default async function InboxPage({
                         {sb.label}
                       </Badge>
                     </div>
-                    <div className="mt-2 flex items-center gap-2">
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
                       {it.category && (
                         <Badge className={categoryClass(it.category.name)}>
                           {it.category.name}
@@ -231,6 +235,7 @@ export default async function InboxPage({
                           信頼度 {confidenceLabel(it.latestDraft.confidence)}
                         </Badge>
                       )}
+                      <MetaPills item={it} />
                     </div>
                   </Link>
                 </li>
@@ -287,5 +292,49 @@ const SummaryCard = ({
     </Link>
   ) : (
     <div className={baseClass}>{inner}</div>
+  );
+};
+
+/**
+ * 受信箱の件名セル下 / モバイルカードに併記する
+ * 「予算 / 個数 / 型番ヒット」の小ピル群。
+ * 該当フィールドが null/空の場合はピル自体を出さない。
+ */
+const MetaPills = ({
+  item,
+  className = "",
+}: {
+  item: InquiryListItem;
+  className?: string;
+}) => {
+  const refs = parseProductRefs(item.productRefs);
+  const hasAny =
+    Boolean(item.budgetText) || Boolean(item.quantityText) || refs.length > 0;
+  if (!hasAny) return null;
+  return (
+    <div className={`flex flex-wrap items-center gap-1 ${className}`}>
+      {item.budgetText && (
+        <span className={META_PILL_CLASS} title={`予算: ${item.budgetText}`}>
+          <span aria-hidden className="text-stone-500">予算</span>
+          <span className="text-stone-800">{item.budgetText}</span>
+        </span>
+      )}
+      {item.quantityText && (
+        <span className={META_PILL_CLASS} title={`個数: ${item.quantityText}`}>
+          <span aria-hidden className="text-stone-500">個数</span>
+          <span className="text-stone-800">{item.quantityText}</span>
+        </span>
+      )}
+      {refs.map((ref) => (
+        <span
+          key={ref}
+          className={META_PILL_PRODUCT_CLASS}
+          title={`型番ヒット: ${ref}`}
+        >
+          <span aria-hidden>#</span>
+          <span className="font-mono">{ref}</span>
+        </span>
+      ))}
+    </div>
   );
 };
