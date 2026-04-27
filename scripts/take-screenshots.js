@@ -15,8 +15,8 @@ const MOBILE_VP = { width: 390, height: 844 };       // iPhone 14 Pro 相当
 const DESKTOP_VP = { width: 1440, height: 900 };
 
 // === 撮影対象ページ ===
-const NEW_INQUIRY_ID = 'cmofk1t44000hy9rday7rprio'; // 未送信 — 明日10名で会議室を借りたい
-const SENT_INQUIRY_ID = 'cmofk1t4f000wy9rd5bpnzdm4'; // 送信済み — 50名規模の社内イベント
+const NEW_INQUIRY_ID = 'cmoglf2ie000hp8rdhi5qv2nd'; // 未送信 — オリジナルトロフィー製作見積もり
+const SENT_INQUIRY_ID = 'cmoglf2il000np8rdar5jzs9n'; // 送信済み — アクリルキーホルダー大量発注
 
 const PAGES = [
   // デスクトップ
