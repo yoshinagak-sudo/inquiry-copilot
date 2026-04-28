@@ -188,16 +188,40 @@ const DraftWorkbench = ({ inquiry }: Props) => {
             <span className="font-mono">{draftMeta.model}</span>
           </span>
         </div>
-        <button
-          type="button"
-          onClick={handleRegenerate}
-          disabled={isRegenerating || isLocked}
-          className="inline-flex h-8 items-center gap-1.5 rounded-md border border-stone-300 bg-white px-3 text-[12px] font-medium text-stone-700 transition-colors hover:border-stone-400 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <span aria-hidden>↻</span>
-          {isRegenerating ? "再生成中…" : "再生成"}
-        </button>
+        <div className="flex items-center gap-2">
+          {inquiry.gmailThreadId && (
+            <a
+              href={`https://mail.google.com/mail/u/0/#inbox/${inquiry.gmailThreadId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-emerald-300 bg-emerald-50 px-3 text-[12px] font-medium text-emerald-800 transition-colors hover:border-emerald-400 hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+              title="Gmail 上の下書きを別タブで開きます"
+            >
+              <span aria-hidden>📝</span>
+              Gmail で開いて編集
+              <span aria-hidden className="text-emerald-600/70">↗</span>
+            </a>
+          )}
+          <button
+            type="button"
+            onClick={handleRegenerate}
+            disabled={isRegenerating || isLocked}
+            className="inline-flex h-8 items-center gap-1.5 rounded-md border border-stone-300 bg-white px-3 text-[12px] font-medium text-stone-700 transition-colors hover:border-stone-400 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <span aria-hidden>↻</span>
+            {isRegenerating ? "再生成中…" : "再生成"}
+          </button>
+        </div>
       </div>
+
+      {/* Gmail 連携の補足説明 */}
+      {inquiry.gmailThreadId && (
+        <div className="border-b border-stone-100 bg-emerald-50/30 px-4 py-1.5">
+          <p className="text-[11px] leading-5 text-emerald-900/80">
+            Gmail 上の下書きを開きます。編集して Gmail から送信できます。
+          </p>
+        </div>
+      )}
 
       {/* 過去納品事例ヒット注記（productRefs がある場合のみ） */}
       {productRefs.length > 0 && (

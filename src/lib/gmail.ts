@@ -116,7 +116,8 @@ export const getActiveClient = async (): Promise<{ client: OAuth2Client; email: 
 };
 
 export type ParsedGmailMessage = {
-  messageId: string;
+  messageId: string;          // Gmail API の内部 ID
+  messageIdHeader: string;    // RFC822 Message-ID ヘッダー値（In-Reply-To に使う）
   threadId: string;
   fromName: string;
   fromEmail: string;
@@ -172,6 +173,7 @@ export const parseGmailMessage = (msg: gmail_v1.Schema$Message): ParsedGmailMess
   const receivedAt = dateHeader ? new Date(dateHeader) : new Date(Number(msg.internalDate ?? 0));
   return {
     messageId: msg.id ?? "",
+    messageIdHeader: get("Message-ID") || get("Message-Id"),
     threadId: msg.threadId ?? "",
     fromName: name,
     fromEmail: email,
@@ -198,6 +200,42 @@ export const fetchInboxMessages = async (
     results.push(parseGmailMessage(msg.data));
   }
   return results;
+};
+
+// Gmail に「下書き」 として返信を作成する（担当者は Gmail 上の下書きを開いて編集→送信するだけ）
+export const createDraftReply = async (
+  client: OAuth2Client,
+  params: {
+    to: string;
+    subject: string;
+    body: string;
+    threadId: string;
+    inReplyTo?: string; // 元メールの Message-ID ヘッダー
+  },
+): Promise<{ draftId: string }> => {
+  const gmail = google.gmail({ version: "v1", auth: client });
+  const subjectEncoded = `=?UTF-8?B?${Buffer.from(params.subject, "utf-8").toString("base64")}?=`;
+  const headers = [
+    `To: ${params.to}`,
+    `Subject: ${subjectEncoded}`,
+    `Content-Type: text/plain; charset=UTF-8`,
+    `Content-Transfer-Encoding: 8bit`,
+    `MIME-Version: 1.0`,
+  ];
+  if (params.inReplyTo) {
+    headers.push(`In-Reply-To: ${params.inReplyTo}`);
+    headers.push(`References: ${params.inReplyTo}`);
+  }
+  const raw = Buffer.from(`${headers.join("\r\n")}\r\n\r\n${params.body}`, "utf-8")
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+  const res = await gmail.users.drafts.create({
+    userId: "me",
+    requestBody: { message: { raw, threadId: params.threadId } },
+  });
+  return { draftId: res.data.id ?? "" };
 };
 
 export const sendMail = async (

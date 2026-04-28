@@ -23,8 +23,10 @@ model Inquiry {
   // 本文中に検出した型番URL（tk_18 等）。引用優先のヒントに使う
   productRefs   String?  // JSON array of product ref tokens
   // Gmail 由来の場合のメタ情報（受信元の特定・重複防止用）
-  gmailMessageId String?  @unique
-  gmailThreadId  String?
+  gmailMessageId       String?  @unique
+  gmailMessageIdHeader String?  // RFC822 Message-ID（In-Reply-To 設定用）
+  gmailThreadId        String?
+  gmailDraftId         String?  // Gmail に作成した下書きID（担当者が編集する対象）
   drafts      DraftReply[]
   sent        SentReply?
   candidates  KnowledgeCandidate[]

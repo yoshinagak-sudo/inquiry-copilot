@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { fetchInboxMessages, getActiveClient, isGmailConfigured } from "@/lib/gmail";
+import { createDraftReply, fetchInboxMessages, getActiveClient, isGmailConfigured } from "@/lib/gmail";
 import { classifyInquiry, extractMetadata, generateDraft } from "@/lib/llm";
 
 const inputSchema = z.object({
@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
           body: m.body,
           receivedAt: m.receivedAt,
           gmailMessageId: m.messageId,
+          gmailMessageIdHeader: m.messageIdHeader || null,
           gmailThreadId: m.threadId,
           categoryId: className ? categoryByName.get(className) ?? null : null,
           budgetText: meta.budgetText,
@@ -75,12 +76,38 @@ export async function POST(req: NextRequest) {
           isLatest: true,
         },
       });
-      await prisma.inquiry.update({ where: { id: inq.id }, data: { status: "drafted" } });
+
+      // Gmail に「下書き」として返信を作成 → 担当者は Gmail を開けば下書きが入っている
+      let draftId: string | null = null;
+      try {
+        const replySubject = m.subject.startsWith("Re:") ? m.subject : `Re: ${m.subject}`;
+        const draft = await createDraftReply(ctx.client, {
+          to: m.fromEmail,
+          subject: replySubject,
+          body: generated.body,
+          threadId: m.threadId,
+          inReplyTo: m.messageIdHeader || undefined,
+        });
+        draftId = draft.draftId;
+      } catch (err) {
+        console.warn("[gmail-sync] draft create failed:", err);
+        errors.push(`${m.subject}: 下書き作成失敗 - ${(err as Error).message}`);
+      }
+
+      await prisma.inquiry.update({
+        where: { id: inq.id },
+        data: { status: "drafted", gmailDraftId: draftId },
+      });
       await prisma.auditLog.create({
         data: {
           inquiryId: inq.id,
           action: "draft_generated",
-          detail: JSON.stringify({ source: "gmail-sync", model: generated.model, confidence: generated.confidence }),
+          detail: JSON.stringify({
+            source: "gmail-sync",
+            model: generated.model,
+            confidence: generated.confidence,
+            gmailDraftId: draftId,
+          }),
         },
       });
       imported++;

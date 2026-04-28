@@ -314,8 +314,12 @@ const MetaPills = ({
   className?: string;
 }) => {
   const refs = parseProductRefs(item.productRefs);
+  const hasGmailDraft = Boolean(item.gmailDraftId);
   const hasAny =
-    Boolean(item.budgetText) || Boolean(item.quantityText) || refs.length > 0;
+    Boolean(item.budgetText) ||
+    Boolean(item.quantityText) ||
+    refs.length > 0 ||
+    hasGmailDraft;
   if (!hasAny) return null;
   return (
     <div className={`flex flex-wrap items-center gap-1 ${className}`}>
@@ -341,6 +345,15 @@ const MetaPills = ({
           <span className="font-mono">{ref}</span>
         </span>
       ))}
+      {hasGmailDraft && (
+        <span
+          className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10.5px] font-medium leading-4 text-emerald-800 ring-1 ring-inset ring-emerald-200"
+          title="Gmail 上に返信下書きが作成済みです"
+        >
+          <span aria-hidden>✓</span>
+          <span>Gmail 下書き済</span>
+        </span>
+      )}
     </div>
   );
 };
