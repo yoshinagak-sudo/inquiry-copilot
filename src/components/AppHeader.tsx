@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { GmailStatusIndicator } from "@/components/GmailStatusIndicator";
 
 const NAV = [
   { href: "/", label: "受信箱", match: (p: string) => p === "/" || p.startsWith("/inquiries") },
@@ -34,7 +35,10 @@ export const AppHeader = () => {
           </span>
         </Link>
 
-        <nav className="flex items-center gap-1 text-sm" aria-label="メインナビ">
+        <div className="flex items-center gap-3">
+          <GmailStatusIndicator />
+          <span aria-hidden className="hidden h-5 w-px bg-stone-200 sm:inline-block" />
+          <nav className="flex items-center gap-1 text-sm" aria-label="メインナビ">
           {NAV.map((item) => {
             const active = item.match(pathname);
             return (
@@ -59,7 +63,8 @@ export const AppHeader = () => {
               </Link>
             );
           })}
-        </nav>
+          </nav>
+        </div>
       </div>
     </header>
   );

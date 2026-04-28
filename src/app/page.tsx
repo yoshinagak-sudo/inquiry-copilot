@@ -11,6 +11,7 @@ import {
   statusBadge,
 } from "@/lib/format";
 import { Badge } from "@/components/Badge";
+import { GmailSyncButton } from "@/components/GmailSyncButton";
 import type { InquiryListItem, InquiryStatus } from "@/types";
 
 type Filter = "all" | InquiryStatus;
@@ -52,13 +53,18 @@ export default async function InboxPage({
 
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-stone-900">
-          受信箱
-        </h1>
-        <p className="text-sm text-stone-600">
-          御社宛の問い合わせを一覧表示します。AI が返信草案を準備しています。
-        </p>
+      <header className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-1">
+          <h1 className="text-xl font-semibold tracking-tight text-stone-900">
+            受信箱
+          </h1>
+          <p className="text-sm text-stone-600">
+            御社宛の問い合わせを一覧表示します。AI が返信草案を準備しています。
+          </p>
+        </div>
+        <div className="flex items-center">
+          <GmailSyncButton />
+        </div>
       </header>
 
       {/* サマリ */}

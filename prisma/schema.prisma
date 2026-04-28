@@ -22,6 +22,9 @@ model Inquiry {
   summaryNote   String?  // 1〜2行の要約（一覧表示用）
   // 本文中に検出した型番URL（tk_18 等）。引用優先のヒントに使う
   productRefs   String?  // JSON array of product ref tokens
+  // Gmail 由来の場合のメタ情報（受信元の特定・重複防止用）
+  gmailMessageId String?  @unique
+  gmailThreadId  String?
   drafts      DraftReply[]
   sent        SentReply?
   candidates  KnowledgeCandidate[]
@@ -29,6 +32,20 @@ model Inquiry {
 
   @@index([status])
   @@index([receivedAt])
+}
+
+model OAuthCredential {
+  id            String   @id @default(cuid())
+  provider      String   // "gmail" 等
+  email         String   @unique
+  accessToken   String
+  refreshToken  String?
+  scope         String?
+  expiryDate    DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([provider])
 }
 
 model DraftReply {

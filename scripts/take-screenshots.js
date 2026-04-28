@@ -7,7 +7,7 @@ const { chromium } = require('playwright');
 const path = require('path');
 const fs = require('fs');
 
-const BASE_URL = process.env.SCREENSHOT_BASE_URL || 'https://example.com';
+const BASE_URL = process.env.SCREENSHOT_BASE_URL || 'http://localhost:3000';
 const OUT_DIR = path.join(__dirname, '..', 'docs', 'screenshots');
 
 // ビューポート

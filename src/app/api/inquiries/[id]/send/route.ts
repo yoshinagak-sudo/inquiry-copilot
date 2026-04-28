@@ -3,6 +3,7 @@ import { z } from "zod";
 import { diffChars } from "diff";
 import { prisma } from "@/lib/prisma";
 import { generateKnowledgeCandidate } from "@/lib/llm";
+import { getActiveClient, sendMail } from "@/lib/gmail";
 
 const sendSchema = z.object({ finalBody: z.string().min(1) });
 
@@ -38,6 +39,31 @@ export async function POST(
   const draftBody = draft?.body ?? "";
   const diffRatio = computeDiffRatio(draftBody, finalBody);
 
+  // Gmail 連携が有効かつスレッドIDがある場合は実送信、そうでなければモック
+  let gmailSent = false;
+  const gmailCtx = inquiry.gmailMessageId ? await getActiveClient() : null;
+  if (gmailCtx) {
+    try {
+      const replySubject = inquiry.subject.startsWith("Re:")
+        ? inquiry.subject
+        : `Re: ${inquiry.subject}`;
+      await sendMail(
+        gmailCtx.client,
+        inquiry.fromEmail,
+        replySubject,
+        finalBody,
+        inquiry.gmailThreadId,
+      );
+      gmailSent = true;
+    } catch (err) {
+      console.error("[gmail send]", err);
+      return Response.json(
+        { error: "Gmail 送信に失敗しました: " + (err as Error).message },
+        { status: 500 },
+      );
+    }
+  }
+
   const sent = await prisma.sentReply.create({
     data: { inquiryId: id, finalBody, draftBody, diffRatio },
   });
@@ -65,7 +91,11 @@ export async function POST(
     data: {
       inquiryId: id,
       action: "sent",
-      detail: JSON.stringify({ diffRatio: Number(diffRatio.toFixed(3)), to: inquiry.fromEmail }),
+      detail: JSON.stringify({
+        diffRatio: Number(diffRatio.toFixed(3)),
+        to: inquiry.fromEmail,
+        gmailSent,
+      }),
     },
   });
 
@@ -92,5 +122,5 @@ export async function POST(
     }
   }
 
-  return Response.json({ sent, candidate, diffRatio });
+  return Response.json({ sent, candidate, diffRatio, gmailSent });
 }
