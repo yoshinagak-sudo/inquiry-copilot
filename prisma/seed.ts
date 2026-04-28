@@ -447,6 +447,12 @@ async function main() {
     const meta = await extractMetadata(i);
     const classifiedName = await classifyInquiry(i, categoryNames);
 
+    // デモ用: Gmail 由来の問い合わせとして架空のメタを付与
+    //（Gmail 連携 UI が表示される状態を提示書で示すためのモック）
+    const idx = INQUIRIES.indexOf(i);
+    const fakeThreadHex = `1903${(0xbdef0000 + idx * 7919).toString(16).padStart(8, "0")}`;
+    const fakeDraftId = `r-${(8000000 + idx * 13).toString(16)}${(idx * 11 + 91).toString(16)}`;
+
     const inq = await prisma.inquiry.create({
       data: {
         fromName: i.fromName,
@@ -459,6 +465,10 @@ async function main() {
         summaryNote: meta.summaryNote,
         productRefs: meta.productRefs.length ? JSON.stringify(meta.productRefs) : null,
         receivedAt: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 48),
+        gmailMessageId: fakeThreadHex,
+        gmailMessageIdHeader: `<CAD${fakeThreadHex}@mail.gmail.example>`,
+        gmailThreadId: fakeThreadHex,
+        gmailDraftId: fakeDraftId,
       },
     });
 
