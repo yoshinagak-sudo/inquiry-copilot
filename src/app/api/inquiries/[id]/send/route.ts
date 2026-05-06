@@ -40,6 +40,7 @@ export async function POST(
   const diffRatio = computeDiffRatio(draftBody, finalBody);
 
   // Gmail 連携が有効かつスレッドIDがある場合は実送信、そうでなければモック
+  // 認証失敗時はデモ動作維持のためログのみ残してフォールバック
   let gmailSent = false;
   const gmailCtx = inquiry.gmailMessageId ? await getActiveClient() : null;
   if (gmailCtx) {
@@ -56,11 +57,7 @@ export async function POST(
       );
       gmailSent = true;
     } catch (err) {
-      console.error("[gmail send]", err);
-      return Response.json(
-        { error: "Gmail 送信に失敗しました: " + (err as Error).message },
-        { status: 500 },
-      );
+      console.warn("[gmail send] failed, falling back to DB-only:", err);
     }
   }
 

@@ -422,6 +422,20 @@ async function main() {
   await prisma.inquiry.deleteMany();
   await prisma.knowledgeArticle.deleteMany();
   await prisma.category.deleteMany();
+  await prisma.oAuthCredential.deleteMany();
+
+  // デモ用: Gmail 連携済み状態を表示するための架空 OAuth 認証情報
+  // 実 Gmail API へのアクセスは sync 実行時のみで、デモではシードの inquiry を表示
+  await prisma.oAuthCredential.create({
+    data: {
+      provider: "gmail",
+      email: "info@sampleagri.example",
+      accessToken: "demo-access-token",
+      refreshToken: "demo-refresh-token",
+      scope: "https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send",
+      expiryDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+    },
+  });
 
   const categoryMap = new Map<string, string>();
   for (const c of CATEGORIES) {
