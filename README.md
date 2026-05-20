@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Inquiry Copilot
 
-## Getting Started
+AI-drafted email replies for customer-facing teams — the model writes the draft, a human ships it with one click, and the corrections feed back into an evolving knowledge base.
 
-First, run the development server:
+## Why it exists
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Butai Farm's customer-facing team handles a steady stream of repetitive inquiries (delivery schedules, product availability, invoicing). Most replies follow the same shape, but each one still costs minutes of context-switching. Inquiry Copilot collapses that loop without surrendering the human's judgment about tone or detail.
+
+## How it works
+
+```
+Inbound email  →  AI drafts reply  →  Human reviews & edits  →  One-click send
+                                              ↓
+                                     Edit diffs feed the knowledge base
+                                              ↓
+                                       Next draft is better
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The system never auto-sends. Every reply passes through a person, and every human edit becomes a training signal for future drafts.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Next.js 16 / React 19 / TypeScript / Tailwind v4
+- Claude / Gemini API for draft generation
+- PostgreSQL for inquiry history and knowledge base
+- Slack notifications when new inquiries arrive
 
-## Learn More
+## Design notes
 
-To learn more about Next.js, take a look at the following resources:
+- **AI in the draft seat, human in the driver seat.** The pattern is borrowed from how Palantir-style deployments use LLMs as translators, not decision-makers.
+- **The knowledge base grows from corrections, not from explicit curation.** Difference between draft and sent reply is the highest-value training signal.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Run locally
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm install
+cp .env.example .env.local
+npx prisma migrate dev
+npm run dev
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built by [Keigo Yoshinaga](https://github.com/yoshinagak-sudo) — CEO of Butai Farm. Part of the in-house operational toolkit reducing repetitive desk work for the customer-service team.
