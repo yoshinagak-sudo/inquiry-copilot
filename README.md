@@ -41,4 +41,4 @@ npm run dev
 
 ---
 
-Built by [Keigo Yoshinaga](https://github.com/yoshinagak-sudo) — CEO of Butai Farm. Part of the in-house operational toolkit reducing repetitive desk work for the customer-service team.
+Built by [Keigo Yoshinaga](https://github.com/yoshinagak-sudo) — Project Lead, Future Strategy Dept @ Butai Farm. Part of the in-house operational toolkit reducing repetitive desk work for the customer-service team.
